@@ -1,3 +1,3 @@
-# sceneIt
+# SceneIt
 
-### sceneIt is movie finding website made using react, tailwind and appwrite!
+### SceneIt is movie finding website made using react, tailwind and appwrite!
