@@ -23,13 +23,16 @@ function App() {
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const fetchMovies = async () => {
+  const fetchMovies = async (query = '') => {
     setIsLoading(true);
     setErrorMsg('');
 
     try {
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-      const response = await fetch(endpoint, API_OPTIONS);
+      const endpoint = query 
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}` 
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      
+        const response = await fetch(endpoint, API_OPTIONS);
 
       if (!response) {
         throw new Error("Failed to fetch movies");
@@ -54,8 +57,8 @@ function App() {
   }
 
   useEffect(() => {
-    fetchMovies();
-  }, [])
+    fetchMovies(searchTerm);
+  }, [searchTerm])
 
   return (
     <main>
@@ -63,9 +66,9 @@ function App() {
       <div className='pattern' />
 
       <div className='wrapper'>
-        <header className='sm:-mt-18'>
+        <header className='sm:-mt-10'>
           <img src="./hero.png" alt="" />
-          <h1>Find <span className="text-gradient">Movies</span> You Enjoy Without The Hassle</h1>
+          <h1 className='sm:-mt-10'>Find <span className="text-gradient">Movies</span> You Enjoy Without The Hassle</h1>
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
 

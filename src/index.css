@@ -17,7 +17,8 @@
 
   --breakpoint-xs: 480px;
 
-  --background-image-hero-pattern: url("/hero-bg.png");
+  --background-image-hero-pattern: url("/img.jpg");
+  
 }
 
 @layer base {
@@ -50,9 +51,14 @@
 }
 
 @layer components {
+  /* .pattern {
+    @apply bg-hero-pattern w-screen h-screen bg-top bg-cover absolute z-0;
+  } */
+
   .pattern {
-    @apply bg-hero-pattern w-screen h-screen bg-center bg-cover absolute z-0;
+    @apply bg-hero-pattern h-[1080px] w-screen bg-top bg-cover absolute z-0;
   }
+  
 
   .wrapper {
     @apply px-5 py-12 xs:p-10 max-w-7xl mx-auto flex flex-col relative z-10;
@@ -79,7 +85,7 @@
   }
 
   .search {
-    @apply w-full bg-light-100/5 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
+    @apply w-full bg-light-200/10 border border-light-200/15 px-4 py-3 rounded-lg mt-10 max-w-3xl mx-auto;
 
     & div {
       @apply relative flex items-center;
