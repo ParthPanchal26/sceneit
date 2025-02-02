@@ -167,3 +167,17 @@
     display: none;
   }
 }
+
+.logo {
+  filter: drop-shadow(0 0 5px orangered);
+}
+
+.sticky-search {
+  position: sticky;
+  top: 1px;
+  backdrop-filter: blur(10px);
+  /* background-color: transparent; */
+  /* width: 100%; */
+  /* z-index: 1000; */
+  /* border: 1px solid; */
+}
