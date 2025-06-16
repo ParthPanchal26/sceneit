@@ -181,3 +181,14 @@
   /* z-index: 1000; */
   /* border: 1px solid; */
 }
+
+html,
+body {
+    overflow-y: auto !important;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+    display: none;
+}
