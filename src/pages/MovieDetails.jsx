@@ -17,7 +17,7 @@ const API_DETAILS = "https://api.themoviedb.org/3/movie";
 const API_POSTER_IMG = "https://image.tmdb.org/t/p/w500";
 const API_WATCH_PROVIDERS = `watch/providers`;
 const API_VIDEOS = "videos?language=en-US";
-const API_VIDEO_TRAILER = "https://www.youtube.com/embed" // ?v=${key}
+const API_VIDEO_TRAILER = "https://www.youtube.com/embed";
 
 const MovieDetails = () => {
 
@@ -33,6 +33,12 @@ const MovieDetails = () => {
   const [providersRent, setProviders_rent] = useState('')
   const [isVideoEnable, setIsVideoEnable] = useState(false)
   const [teaserKeys, setTeaserKeys] = useState([])
+  const [posters, setPosters] = useState([])
+  const [isPosterOpen, setIsPosterOpen] = useState(false)
+  const [backdrops, setBackdrops] = useState([])
+  const [isBackdropOpen, setIsBackdropOpen] = useState(false)
+  const [logos, setLogos] = useState([])
+  const [isLogosOpen, setIsLogosOpen] = useState(false)
 
   const { id } = useParams();
 
@@ -66,7 +72,7 @@ const MovieDetails = () => {
       let teasers = response.data.results;
       const teaser_keys = teasers.filter(teaser => teaser.type === "Teaser");
       setTeaserKeys(teaser_keys)
-      console.log(teaser_keys);
+      // console.log(teaser_keys);
     } catch (error) {
       console.log(error)
     }
@@ -86,21 +92,38 @@ const MovieDetails = () => {
     }
   }
 
+  const fetchMovieImages = async () => {
+    try {
+      const response = await axios.get(`${API_DETAILS}/${id}/images`, API_OPTIONS);
+
+      const posters = response.data.posters
+      if (!Array.isArray(posters)) setPosters([])
+      Array.isArray(posters[0]) ? setPosters(posters.flat()) : setPosters(posters)
+
+      const backdrops = response.data.backdrops
+      if (!Array.isArray(backdrops)) setBackdrops([])
+      Array.isArray(backdrops[0]) ? setBackdrops(backdrops.flat()) : setBackdrops(backdrops)
+
+      const logos = response.data.logos
+      if (!Array.isArray(logos)) setLogos([])
+      Array.isArray(logos[0]) ? setBackdrops(logos.flat()) : setLogos(logos)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useEffect(() => {
     fetchMovieDetails();
     fetchMovieTrailer();
     fetchMovieTeaser();
     fetchMovieProviders();
+    fetchMovieImages();
   }, [])
 
-  useEffect(() => {
-    console.log(movieTrailerKey)
-  }, [movieTrailerKey])
-
-  const handleRevert = () => {
-    setIsVideoEnable(false)
-    console.log(isVideoEnable)
-  }
+  // useEffect(() => {
+  //   console.log(movieDetails)
+  // }, [movieDetails])
 
   return (
     <>
@@ -114,28 +137,32 @@ const MovieDetails = () => {
               ? <div>
                 <iframe src={`${API_VIDEO_TRAILER}/${movieTrailerKey}?controls=1`} className='w-full h-[300px]'>
                 </iframe>
-                <div className='font-extrabold text-4xl text-white text-right mr-3' onClick={handleRevert}>&larr;</div>
+                <div className='font-extrabold text-4xl text-white text-right mr-3 cursor-pointer' onClick={() => setIsVideoEnable(!isVideoEnable)}>&larr;</div>
               </div>
               : <img onClick={() => setIsVideoEnable(true)} src={movieDetails?.poster_path ? `${API_POSTER_IMG}${movieDetails?.poster_path}` : './No-movie.png'} alt={movieDetails} className='block m-auto' />
           }
         </div>
 
+
         <div className='flex flex-col'>
-          <img src={movieDetails?.poster_path ? `${API_POSTER_IMG}${movieDetails?.poster_path}` : './No-movie.png'} alt={movieDetails} className='hidden md:block md:h-[90vh] md:pt-20 md:pl-20' />
-          <div className='hidden md:block'>
-            <p className='text-3xl text-white pl-20 mt-10'>{teaserKeys.length > 1 ? "Teasers" : "Teaser"}</p>
-            {
-              teaserKeys.map((key) => <iframe key={key.id} src={`${API_VIDEO_TRAILER}/${key.key}?controls=1`} className='w-auto h-[45vh] pl-20 py-5'>
-              </iframe>)
-              // console.log(teaserKeys)
-            }
-          </div>
+          <img src={movieDetails?.poster_path ? `${API_POSTER_IMG}${movieDetails?.poster_path}` : './No-movie.png'} alt={movieDetails} className='hidden md:block md:h-[90vh] md:pt-20 md:pl-20 rounded-md min-w-[426px] min-h-[641px]' />
+          {
+            teaserKeys.length > 0 &&
+            <div className='hidden md:block'>
+              <p className='text-3xl text-white pl-20 mt-10'>{teaserKeys.length > 1 ? "Teasers" : "Teaser"}</p>
+              {
+                teaserKeys.map((key) => <iframe key={key.id} src={`${API_VIDEO_TRAILER}/${key.key}?controls=1`} className='w-auto h-[45vh] pl-20 py-5'>
+                </iframe>)
+                // console.log(teaserKeys)
+              }
+            </div>
+          }
         </div>
 
         <div className='py-6 px-6 md:py-20'>
           <section id="heading" className='md:align-middle flex flex-col md:flex-col gap-3 md:gap-6 overflow-x-auto'>
 
-            <div className='flex gap-3'>
+            <div className='flex gap-1'>
               <p className='text-xs md:text-xl text-white font-extrabold'>{movieDetails?.original_language}</p>
               <h2 className='text-4xl md:text-7xl bg-gradient-to-r from-[#d6c7ff] to-[#ab8bff] bg-clip-text text-transparent'>{movieDetails?.title}</h2>
             </div>
@@ -210,7 +237,7 @@ const MovieDetails = () => {
             </span>
           </section>
 
-          <section id='overview' className='text-white mt-2'>
+          <section id='overview' className='text-white mt-4'>
             <p className='overflow-x-auto text-justify md:pr-10'>
               <span className='text-2xl font-bold bg-gradient-to-r from-[#d6c7ff] to-[#ab8bff] bg-clip-text text-transparent'>Overview</span>
               <br />
@@ -224,9 +251,9 @@ const MovieDetails = () => {
             </p>
           </section>
 
-          <section id="watch_options" className='text-white mt-2'>
+          <section id="watch_options" className='text-white mt-4'>
             <p className='text-2xl font-semibold'>Watch Options</p>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-3 md:gap-6">
               {
                 providersAds &&
                 <div>
@@ -291,12 +318,85 @@ const MovieDetails = () => {
           </section>
 
           <section id='trailer' className='text-white mt-4 hidden md:block'>
-            <p className='text-4xl font-medium'>Trailer</p>
-            <iframe src={`${API_VIDEO_TRAILER}/${movieTrailerKey}?controls=1`} className='w-[380px] h-[220px] md:w-[470px] md:h-[330px] rounded-md lg:min-w-[700px] lg:min-h-[400px]'>
+            <p className='text-3xl font-medium'>Trailer</p>
+            {/* <iframe src={`${API_VIDEO_TRAILER}/${movieTrailerKey}?controls=1`} className='w-full h-[380px] rounded-md mt-2'> */}
+            <iframe src={`${API_VIDEO_TRAILER}/${movieTrailerKey}?controls=1`} className='w-[380px] h-[220px] md:w-full md:h-[330px] rounded-md lg:min-w-full lg:min-h-[400px]'>
             </iframe>
           </section>
 
-          
+
+          {(posters.length > 0 || backdrops.length > 0 || logos.length > 0) &&
+            <p className='text-3xl text-white mt-4 font-medium'>Gallary</p>
+          }
+          {
+            posters.length > 0 &&
+            <section id='show_poster_images' className="mt-4 text-white">
+              <div>
+                <div className="flex justify-between w-50 items-center">
+                  <div>
+                    <p>Poster Images</p>
+                  </div>
+                  <button onClick={() => setIsPosterOpen(!isPosterOpen)} aria-label="toggler" className="focus:outline-none cursor-pointer" data-menu>
+
+                    {isPosterOpen ? <>&#8593;</> : <>&#8595;</>}
+                  </button>
+                </div>
+
+                <div className={isPosterOpen ? `mt-6 flex flex-row gap-3 overflow-x-auto w-full md:w-[735px]` : `hidden`}>
+                  {
+                    posters.slice(0, 500).map((poster, index) => <img key={index} src={`${API_POSTER_IMG}/${poster?.file_path}`} alt={`${poster?.file_path}`} className='rounded-sm w-50' title={`${poster?.file_path}`} />)
+                  }
+                </div>
+              </div>
+            </section>
+          }
+
+          {
+            backdrops.length > 0 &&
+            <section id='show_poster_images' className="mt-4 text-white">
+              <div>
+                <div className="flex justify-between w-50 items-center">
+                  <div>
+                    <p>Backdrops</p>
+                  </div>
+                  <button onClick={() => setIsBackdropOpen(!isBackdropOpen)} aria-label="toggler" className="focus:outline-none cursor-pointer" data-menu>
+
+                    {isBackdropOpen ? <>&#8593;</> : <>&#8595;</>}
+                  </button>
+                </div>
+
+                <div className={isBackdropOpen ? `mt-6 flex flex-row gap-3 overflow-x-auto w-full md:w-[735px]` : `hidden`}>
+                  {
+                    backdrops.slice(0, 500).map((backdrop, index) => <img key={index} src={`${API_POSTER_IMG}/${backdrop?.file_path}`} alt={`${backdrop?.file_path}`} className='rounded-sm w-50' title={`${backdrop?.file_path}`} />)
+                  }
+                </div>
+              </div>
+            </section>
+          }
+
+          {
+            logos.length > 0 &&
+            <section id='show_poster_images' className="mt-4 text-white">
+              <div>
+                <div className="flex justify-between w-50 items-center">
+                  <div>
+                    <p>Logos</p>
+                  </div>
+                  <button onClick={() => setIsLogosOpen(!isLogosOpen)} aria-label="toggler" className="focus:outline-none cursor-pointer" data-menu>
+
+                    {isLogosOpen ? <>&#8593;</> : <>&#8595;</>}
+                  </button>
+                </div>
+
+                <div className={isLogosOpen ? `mt-6 flex flex-row gap-3 overflow-x-auto w-full md:w-[735px]` : `hidden`}>
+                  {
+                    logos.slice(0, 500).map((logo, index) => <img key={index} src={`${API_POSTER_IMG}/${logo?.file_path}`} alt={`${logo?.file_path}`} className='rounded-sm w-full h-10' title={`${logo?.file_path}`} />)
+                  }
+                </div>
+              </div>
+            </section>
+          }
+
 
         </div>
       </div >

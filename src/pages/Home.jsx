@@ -26,7 +26,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const [debounceSearchTerm, setDebounceSearchTerm] = useState('');
   const [trendingMovies, setTrendingMovies] = useState([]);
-// console.log(movieList)
+  // console.log(movieList)
   useDebounce(() => setDebounceSearchTerm(searchTerm), 300, [searchTerm])
 
   const fetchMovies = async (query = '') => {
@@ -94,9 +94,9 @@ function Home() {
           <img src="./hero.png" alt="" />
           <h1 className='sm:-mt-10'>Find <span className="text-gradient">Movies</span> You Enjoy Without The Hassle</h1>
         </header>
-          {/* <div className="sticky-search"> */}
-            <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
-          {/* </div> */}
+        <div className="sticky-search">
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        </div>
 
         {trendingMovies.length > 0 && (
           <section className='trending'>
