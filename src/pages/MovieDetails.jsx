@@ -151,7 +151,7 @@ const MovieDetails = () => {
             <div className='hidden md:block'>
               <p className='text-3xl text-white pl-20 mt-10'>{teaserKeys.length > 1 ? "Teasers" : "Teaser"}</p>
               {
-                teaserKeys.map((key) => <iframe key={key.id} src={`${API_VIDEO_TRAILER}/${key.key}?controls=1`} className='w-auto h-[45vh] pl-20 py-5'>
+                teaserKeys.slice(0, 2).map((key) => <iframe key={key.id} src={`${API_VIDEO_TRAILER}/${key.key}?controls=1`} className='w-auto h-[45vh] pl-20 py-5'>
                 </iframe>)
                 // console.log(teaserKeys)
               }
